@@ -658,3 +658,24 @@ body {
 .win-screen a:hover {
   text-shadow: 0 0 16px rgba(255, 110, 199, 0.9);
 }
+
+.mute-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: 1px solid #3a3a6a;
+  color: #6a6a9a;
+  font-family: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s;
+}
+
+.mute-btn:hover {
+  border-color: #00fff7;
+  color: #00fff7;
+}

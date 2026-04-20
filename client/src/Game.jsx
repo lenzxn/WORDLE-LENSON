@@ -1,6 +1,31 @@
 import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 
+function playBeep(frequency, duration, type = 'sine', volume = 0.3) {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)()
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.type = type
+  osc.frequency.setValueAtTime(frequency, ctx.currentTime)
+  gain.gain.setValueAtTime(volume, ctx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
+  osc.start(ctx.currentTime)
+  osc.stop(ctx.currentTime + duration)
+}
+
+function playWinSound() {
+  const notes = [523, 659, 784, 1047]
+  notes.forEach((freq, i) => setTimeout(() => playBeep(freq, 0.3, 'sine', 0.4), i * 150))
+}
+
+function playGuessSound(result) {
+  if (result === 'correct') playBeep(880, 0.15, 'sine', 0.3)
+  else if (result === 'misplaced') playBeep(440, 0.15, 'triangle', 0.2)
+  else playBeep(150, 0.2, 'sawtooth', 0.2)
+}
+
 const API = '';
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -20,6 +45,8 @@ export default function Game() {
   )
 
   const guessEndRef = useRef(null)
+  const audioRef = useRef(null)
+  const [muted, setMuted] = useState(false)
 
   useEffect(() => {
     guessEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -70,6 +97,10 @@ export default function Game() {
     setTime(null)
     setSaved(false)
     setGuess('')
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+      audioRef.current.play().catch(() => {})
+    }
   }
 
   async function submitGuess() {
@@ -79,7 +110,15 @@ export default function Game() {
     const { feedback, won, time } = res.data
     setGuesses(prev => [...prev, { word: cleaned, feedback }])
     setGuess('')
-    if (won) { setWon(true); setTime(time) }
+    const dominantResult = feedback.every(f => f.result === 'correct') ? 'correct'
+      : feedback.some(f => f.result === 'misplaced') ? 'misplaced' : 'incorrect'
+    playGuessSound(dominantResult)
+    if (won) {
+      setWon(true)
+      setTime(time)
+      playWinSound()
+      if (audioRef.current) audioRef.current.pause()
+    }
   }
 
   async function saveScore() {
@@ -100,9 +139,17 @@ export default function Game() {
   const letterStatus = getLetterStatus()
   const correctSlots = getCorrectSlots()
 
+  function toggleMute() {
+    if (audioRef.current) {
+      audioRef.current.muted = !muted
+      setMuted(!muted)
+    }
+  }
+
   if (!gameId) {
     return (
       <div className="console-body">
+        <audio ref={audioRef} src="/music.mp3" loop preload="auto" />
         <div className="letter-grid">
           {gridLetters.map((letter, i) => (
             <div
@@ -153,6 +200,8 @@ export default function Game() {
 
   return (
     <div className="game-layout">
+      <audio ref={audioRef} src="/music.mp3" loop preload="auto" />
+      <button className="mute-btn" onClick={toggleMute}>{muted ? '🔇 MUTED' : '🔊 MUSIC'}</button>
       <div className="answer-slots">
         {correctSlots.map((letter, i) => (
           <div key={i} className={`answer-slot ${letter ? 'filled' : ''}`}>
