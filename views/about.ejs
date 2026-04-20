@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>About — Wordle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0d0d1a;
+            background-image:
+                linear-gradient(rgba(138, 43, 226, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138, 43, 226, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #e0e0ff;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            letter-spacing: 0.6em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #bf5fff, #00fff7, #ff6ec7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 24px rgba(191, 95, 255, 0.6));
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #4a4a8a;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        /* Console */
+        .console {
+            border: 1px solid #bf5fff;
+            box-shadow: 0 0 60px rgba(191, 95, 255, 0.2);
+            background: rgba(10, 10, 26, 0.98);
+        }
+
+        .console-header {
+            background: linear-gradient(90deg, #bf5fff, #8833cc);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .console-header span {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: #0d0d1a;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .console-dots {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .console-dots div {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .console-dots div:nth-child(1) {
+            background: #ff6ec7;
+            box-shadow: 0 0 6px #ff6ec7;
+        }
+
+        .console-dots div:nth-child(2) {
+            background: #ffcc00;
+            box-shadow: 0 0 6px #ffcc00;
+        }
+
+        .console-dots div:nth-child(3) {
+            background: #00fff7;
+            box-shadow: 0 0 6px #00fff7;
+        }
+
+        .console-body {
+            padding: 28px;
+        }
+
+        .system-text {
+            color: #bf5fff;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 28px;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 28px;
+            border-left: 2px solid #bf5fff;
+            padding-left: 16px;
+        }
+
+        .section h2 {
+            color: #bf5fff;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .section p {
+            color: #8888cc;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            line-height: 1.8;
+        }
+
+        /* Feedback legend */
+        .feedback-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .feedback-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feedback-box {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .feedback-box .symbol {
+            font-size: 0.5rem;
+            margin-top: 2px;
+        }
+
+        .feedback-box.correct {
+            border: 2px solid #00fff7;
+            color: #00fff7;
+            background: rgba(0, 255, 247, 0.08);
+            box-shadow: 0 0 12px rgba(0, 255, 247, 0.3);
+        }
+
+        .feedback-box.correct .symbol {
+            color: #00fff7;
+        }
+
+        .feedback-box.misplaced {
+            border: 2px solid #ff6ec7;
+            color: #ff6ec7;
+            background: rgba(255, 110, 199, 0.08);
+            box-shadow: 0 0 12px rgba(255, 110, 199, 0.3);
+        }
+
+        .feedback-box.misplaced .symbol {
+            color: #ff6ec7;
+        }
+
+        .feedback-box.incorrect {
+            border: 1px solid #4a1a1a;
+            color: #aa3333;
+            background: rgba(255, 50, 50, 0.06);
+        }
+
+        .feedback-box.incorrect .symbol {
+            color: #661a1a;
+        }
+
+        .feedback-desc {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            color: #8888cc;
+        }
+
+        /* Tech stack */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .tech-item {
+            border: 1px solid #1a1a3a;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            color: #6666aa;
+        }
+
+        .tech-item span {
+            color: #00fff7;
+            display: block;
+            margin-bottom: 2px;
+            font-size: 0.85rem;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #1a1a3a;
+        }
+
+        .nav a {
+            color: #bf5fff;
+            text-decoration: none;
+            font-size: 0.82rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            color: #00fff7;
+            text-shadow: 0 0 8px rgba(0, 255, 247, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>Wordle</h1>
+            <p> retro word game v 1.0556 </p>
+        </div>
+
+        <div class="console">
+            <div class="console-header">
+                <span>about.exe</span>
+                <div class="console-dots">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="console-body">
+                <p class="system-text">&gt; ABOUT.SYS LOADED_</p>
+
+                <div class="section">
+                    <h2>// About</h2>
+                    <p>
+                        A Wordle-inspired word guessing game built as a fullstack application.
+                        Guess the hidden word — after each guess you get color-coded feedback
+                        to help you narrow down the answer.
+                    </p>
+                </div>
+
+                <div class="section">
+                    <h2>// How to play</h2>
+                    <div class="feedback-grid">
+                        <div class="feedback-item">
+                            <div class="feedback-box correct">
+                                A
+                                <span class="symbol">[ ✓ ]</span>
+                            </div>
+                            <span class="feedback-desc">Correct letter, correct position</span>
+                        </div>
+                        <div class="feedback-item">
+                            <div class="feedback-box misplaced">
+                                B
+                                <span class="symbol">[ ? ]</span>
+                            </div>
+                            <span class="feedback-desc">Letter exists but wrong position</span>
+                        </div>
+                        <div class="feedback-item">
+                            <div class="feedback-box incorrect">
+                                C
+                                <span class="symbol">[ ✗ ]</span>
+                            </div>
+                            <span class="feedback-desc">Letter not in the word</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>// Settings</h2>
+                    <p>
+                        Choose word length (3–10 letters) and whether to only allow
+                        words with unique letters. The word is randomly selected on
+                        the server — no cheating possible!
+                    </p>
+                </div>
+
+                <div class="section">
+                    <h2>// Tech stack</h2>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <span>React + Vite</span>
+                            Frontend UI
+                        </div>
+                        <div class="tech-item">
+                            <span>Node.js + Express</span>
+                            Backend server
+                        </div>
+                        <div class="tech-item">
+                            <span>MongoDB</span>
+                            Highscore database
+                        </div>
+                        <div class="tech-item">
+                            <span>EJS</span>
+                            Server-side rendering
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav">
+                    <a href="/">&gt; Play</a>
+                    <a href="/highscore">&gt; Highscore</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

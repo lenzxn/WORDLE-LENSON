@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Highscore — Wordle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0d0d1a;
+            background-image:
+                linear-gradient(rgba(138, 43, 226, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138, 43, 226, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #e0e0ff;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            letter-spacing: 0.6em;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #bf5fff, #00fff7, #ff6ec7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 24px rgba(191, 95, 255, 0.6));
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #4a4a8a;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .console {
+            border: 1px solid #bf5fff;
+            box-shadow: 0 0 60px rgba(191, 95, 255, 0.2);
+            background: rgba(10, 10, 26, 0.98);
+        }
+
+        .console-header {
+            background: linear-gradient(90deg, #bf5fff, #8833cc);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .console-header span {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: #0d0d1a;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .console-dots {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .console-dots div {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .console-dots div:nth-child(1) {
+            background: #ff6ec7;
+            box-shadow: 0 0 6px #ff6ec7;
+        }
+
+        .console-dots div:nth-child(2) {
+            background: #ffcc00;
+            box-shadow: 0 0 6px #ffcc00;
+        }
+
+        .console-dots div:nth-child(3) {
+            background: #00fff7;
+            box-shadow: 0 0 6px #00fff7;
+        }
+
+        .console-body {
+            padding: 24px;
+        }
+
+        .system-text {
+            color: #bf5fff;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a1a3a;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: 1px solid #2a2a4a;
+            color: #6666aa;
+            background: transparent;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            border-color: #bf5fff;
+            color: #bf5fff;
+            box-shadow: 0 0 8px rgba(191, 95, 255, 0.3);
+        }
+
+        .btn.active {
+            border-color: #bf5fff;
+            color: #bf5fff;
+            background: rgba(191, 95, 255, 0.1);
+            box-shadow: 0 0 12px rgba(191, 95, 255, 0.3);
+        }
+
+        /* Table */
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .score-table th {
+            text-align: left;
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #4a4a8a;
+            padding: 8px 12px;
+            border-bottom: 1px solid #1a1a3a;
+        }
+
+        .score-table td {
+            padding: 12px;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid #0d0d1a;
+            color: #8888cc;
+        }
+
+        .score-table tr:hover td {
+            background: rgba(191, 95, 255, 0.03);
+        }
+
+        /* Top 3 */
+        .score-table tr:nth-child(1) td {
+            color: #ffcc00;
+        }
+
+        .score-table tr:nth-child(2) td {
+            color: #aaaaaa;
+        }
+
+        .score-table tr:nth-child(3) td {
+            color: #bf5fff;
+        }
+
+        .rank {
+            color: #2a2a4a;
+            font-size: 0.75rem;
+        }
+
+        .score-table tr:nth-child(1) .rank {
+            color: #ffcc00;
+        }
+
+        .score-table tr:nth-child(2) .rank {
+            color: #aaaaaa;
+        }
+
+        .score-table tr:nth-child(3) .rank {
+            color: #bf5fff;
+        }
+
+        .name-cell {
+            color: #e0e0ff !important;
+        }
+
+        .time-cell {
+            color: #00fff7 !important;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #2a2a4a;
+            font-size: 0.82rem;
+            letter-spacing: 0.15em;
+            padding: 32px;
+        }
+
+        /* Nav */
+        .nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #1a1a3a;
+        }
+
+        .nav a {
+            color: #bf5fff;
+            text-decoration: none;
+            font-size: 0.82rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            color: #00fff7;
+            text-shadow: 0 0 8px rgba(0, 255, 247, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>Wordle</h1>
+            <p> retro word game v 1.0556 </p>
+        </div>
+
+        <div class="console">
+            <div class="console-header">
+                <span>highscore.exe</span>
+                <div class="console-dots">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="console-body">
+                <p class="system-text">&gt; HIGHSCORE.SYS LOADED — <%= scores.length %> ENTRIES_</p>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <a class="btn <%= !query.wordLength && !query.uniqueOnly ? 'active' : '' %>"
+                        href="/highscore">All</a>
+
+                    <% [3,4,5,6,7,8].forEach(len=> { %>
+                        <a class="btn <%= query.wordLength == len ? 'active' : '' %>"
+                            href="/highscore?wordLength=<%= len %>">
+                            <%= len %> letters
+                        </a>
+                        <% }) %>
+
+                            <a class="btn <%= query.uniqueOnly === 'true' ? 'active' : '' %>"
+                                href="/highscore?uniqueOnly=true">Unique only</a>
+                </div>
+
+                <!-- Table -->
+                <% if (scores.length===0) { %>
+                    <p class="empty-msg">&gt; NO ENTRIES FOUND_</p>
+                    <% } else { %>
+                        <table class="score-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Time</th>
+                                    <th>Guesses</th>
+                                    <th>Length</th>
+                                    <th>Unique</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% scores.forEach((score, index)=> { %>
+                                    <tr>
+                                        <td class="rank">#<%= index + 1 %>
+                                        </td>
+                                        <td class="name-cell">
+                                            <%= score.name %>
+                                        </td>
+                                        <td class="time-cell">
+                                            <%= Math.round(score.time / 1000) %>s
+                                        </td>
+                                        <td>
+                                            <%= score.guesses.length %>
+                                        </td>
+                                        <td>
+                                            <%= score.wordLength %> letters
+                                        </td>
+                                        <td>
+                                            <%= score.uniqueOnly ? '[ ✓ ]' : '[ — ]' %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        <% } %>
+
+                            <div class="nav">
+                                <a href="/">&gt; Play</a>
+                                <a href="/about">&gt; About</a>
+                            </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
