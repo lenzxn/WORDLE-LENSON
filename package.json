@@ -7,7 +7,8 @@
     "postinstall": "npm install --prefix client",
     "start": "npm run build --prefix client && tsx server/index.ts",
     "dev": "nodemon --exec tsx server/index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
